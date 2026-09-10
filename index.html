@@ -21,9 +21,6 @@
     --navy:     #1e3888;
     --ink-soft: #0a2a20;
 
-    /* 'Clash Display' and 'General Sans' are free stand-ins (Fontshare) chosen for
-       weight/geometry close to Afarn 2 / Massilla Variable. Replace the @font-face-free
-       stack below with your licensed fonts any time — nothing else needs to change. */
     --display: 'Clash Display', 'Afarn 2', 'Arial Black', sans-serif;
     --body:    'General Sans', 'Massilla Variable', system-ui, sans-serif;
 
@@ -91,7 +88,7 @@
   .menu-open .menu-btn .bars span:nth-child(2){ opacity:0; }
   .menu-open .menu-btn .bars span:nth-child(3){ top:7px; transform:rotate(-45deg); }
 
-  /* ---------- full-screen nav overlay (Podium-style) ---------- */
+  /* ---------- full-screen nav overlay ---------- */
   .overlay{
     position:fixed; inset:0; z-index:55; background:var(--navy);
     display:grid; grid-template-columns:1.1fr .9fr;
@@ -389,11 +386,17 @@
 
   .g-tile{
     position:relative; border-radius:10px; overflow:hidden; cursor:pointer;
-    border:1px solid rgba(218,228,237,.14); background:none; padding:0;
+    border:1px solid rgba(218,228,237,.14); background:var(--ink-soft); padding:0;
     transition:transform .35s var(--ease), box-shadow .35s var(--ease);
   }
   .g-tile:hover{ transform:translateY(-3px); box-shadow:0 14px 30px rgba(0,0,0,.35); }
   .g-tile.tall{ grid-row: span 2; }
+  .g-tile img{
+    width:100%; height:100%; object-fit:cover; display:block;
+    transition:transform .5s var(--ease);
+  }
+  .g-tile:hover img{ transform:scale(1.05); }
+
   .g-tile .play{
     position:absolute; z-index:3; top:50%; left:50%; transform:translate(-50%,-50%);
     width:38px; height:38px; border-radius:50%; background:rgba(4,27,21,.55);
@@ -403,7 +406,9 @@
   .g-tile .play svg{ width:13px; height:13px; margin-left:1px; }
   .g-tile .g-label{
     position:absolute; z-index:2; bottom:8px; left:9px; font-size:.62rem;
-    letter-spacing:.1em; text-transform:uppercase; opacity:.8; color:var(--mist);
+    letter-spacing:.1em; text-transform:uppercase; opacity:.9; color:var(--mist);
+    background:rgba(4,27,21,.75); padding:2px 6px; border-radius:4px;
+    backdrop-filter:blur(2px);
   }
 
   @media (max-width:820px){
@@ -413,9 +418,9 @@
     .card-gallery{ grid-auto-rows:110px; }
   }
 
-  /* ---------- lightbox (enlarges a gallery tile from the project card) ---------- */
+  /* ---------- lightbox ---------- */
   .lightbox{
-    position:fixed; inset:0; z-index:62; background:rgba(2,8,6,.9);
+    position:fixed; inset:0; z-index:62; background:rgba(2,8,6,.92);
     display:flex; align-items:center; justify-content:center;
     opacity:0; pointer-events:none; transition:opacity .35s var(--ease);
     padding: 40px;
@@ -424,6 +429,10 @@
   .lightbox-inner{
     position:relative; width:min(920px,100%); aspect-ratio:16/10; border-radius:14px; overflow:hidden;
     border:1px solid rgba(218,228,237,.14); transform:scale(.96); transition:transform .35s var(--ease);
+    background:var(--ink-soft); display:flex; align-items:center; justify-content:center;
+  }
+  .lightbox-inner img{
+    max-width:100%; max-height:100%; object-fit:contain; display:block;
   }
   .lightbox.open .lightbox-inner{ transform:scale(1); }
   .lightbox .ph-visual .ph-index{ font-size:9rem; }
@@ -440,18 +449,12 @@
   .lb-close svg, .lb-nav svg{ width:16px; height:16px; }
   .lb-caption{
     position:absolute; bottom:0; left:0; right:0; padding:16px 20px; z-index:4;
-    background:linear-gradient(0deg, rgba(2,10,8,.75), transparent);
-    font-size:.8rem; letter-spacing:.06em; text-transform:uppercase; opacity:.85; color:var(--mist);
+    background:linear-gradient(0deg, rgba(2,10,8,.85), transparent);
+    font-size:.8rem; letter-spacing:.06em; text-transform:uppercase; opacity:.95; color:var(--mist);
   }
   @media (max-width:600px){ .lb-close{ top:-56px; } }
 
-  /* ---------- auto-invert text ----------
-     Same trick as the topbar: mix-blend-mode:difference against whatever's
-     behind the element. Because the base color is our light "mist" tone,
-     the math (|mist - backdrop|) resolves to a legible, on-brand color
-     against every section background — dark or light — AND reacts live
-     to the cursor blob as it drifts underneath. Placed last so it wins
-     the cascade over the per-section color rules above. */
+  /* ---------- auto-invert text ---------- */
   .eyebrow, .hero p, .hero-tags span, .scroll-hint,
   .section-head h2, .section-head p,
   .about h2, .about p, .fact b, .fact span,
@@ -463,9 +466,7 @@
     color:var(--mist);
     opacity:1;
   }
-  /* the orange accent word stays a fixed, solid pop instead of inverting */
   .hero h1 .accent{ mix-blend-mode:normal; color:var(--orange); }
-  /* the primary CTA keeps guaranteed contrast through its own hover state */
   .contact-cta .go{ mix-blend-mode:normal; color:var(--mist); }
   .contact-cta .go:hover{ color:var(--ink); }
 </style>
@@ -478,10 +479,7 @@
 <header class="topbar">
   <a href="#" class="brand">
     <span class="brand-mark">
-      <!-- This is your mountain mark, recolored to the "mist" tone with a transparent
-           background — that's what lets it invert the same way the text does.
-           Swap the src for any other logo file/URL any time. -->
-      <img src="data:image/png;base64,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" alt="Direction by Dawson logo">
+      <img src="data:image/png;base64,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" alt="Direction by Dawson logo">
     </span>
     <span class="brand-word">Direction<small>By Dawson</small></span>
   </a>
@@ -649,7 +647,7 @@ document.querySelectorAll('.overlay-links a').forEach(a=>{
   a.addEventListener('click', ()=> document.body.classList.remove('menu-open'));
 });
 
-/* ---------- click-to-copy contact rows (Podium-style) ---------- */
+/* ---------- click-to-copy contact rows ---------- */
 document.querySelectorAll('.copy-email').forEach(btn=>{
   btn.addEventListener('click', async ()=>{
     const email = btn.dataset.email;
@@ -659,12 +657,7 @@ document.querySelectorAll('.copy-email').forEach(btn=>{
   });
 });
 
-/* ---------- ambient cursor-trail canvas (liquid blob) ----------
-   A single soft, buttery blob that lags behind the pointer and smears
-   into a trail, rather than repeating the logo shape. The canvas blends
-   with mix-blend-mode:difference, so wherever the blob drifts under the
-   page's headline text it locally inverts that text's color too — the
-   same inversion trick as the topbar, now interactive. */
+/* ---------- ambient cursor-trail canvas ---------- */
 const canvas = document.getElementById('trail-canvas');
 const ctx = canvas.getContext('2d');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -679,7 +672,6 @@ function resize(){
 resize();
 window.addEventListener('resize', resize);
 
-/* mx, my are already tracked by the custom-cursor script above */
 let bx = mx, by = my;
 let trail = [];
 const MAX_POINTS = 18;
@@ -704,7 +696,7 @@ function drawBlob(){
   ctx.filter = 'blur(14px)';
   for (let i=0;i<trail.length;i++){
     const p = trail[i];
-    const t = i/(trail.length-1); // 0 = tail, 1 = head
+    const t = i/(trail.length-1);
     const radius = 5 + t*30;
     ctx.globalAlpha = 0.12 + t*0.5;
     ctx.fillStyle = '#e28413';
@@ -722,14 +714,12 @@ function tick(){
 }
 if (!reduceMotion) tick();
 else {
-  // still show a static soft dot so the effect isn't just absent
   trail = [{x:mx,y:my},{x:mx,y:my}];
   drawBlob();
 }
 
 /* ================= ADDITIONAL PROJECTS ================= */
 
-/* ---------- placeholder data ---------- */
 const palette = ['var(--teal)','var(--orange)','var(--navy)','var(--red)'];
 function grad(i){
   const a = palette[i % palette.length];
@@ -741,18 +731,34 @@ function phVisual(i){
 }
 
 const projects = [
-  { tag:'3D / Motion',   title:'Prism',   cat:'Brand Film',     role:'3D Modeling / Motion Design' },
-  { tag:'Identity',      title:'Access',  cat:'Brand System',   role:'Art Direction / Print' },
-  { tag:'Packaging',     title:'Umai',    cat:'Product Design', role:'Illustration / Packaging' },
-  { tag:'Demo Site',     title:'Track',   cat:'Demo Site',      role:'Design / Front-End Development / 3D Modeling' },
-  { tag:'Web',           title:'Ledger',  cat:'Web Design',     role:'Front-End Development / UI' },
-  { tag:'Campaign',      title:'Aftertone', cat:'Campaign',     role:'Art Direction / Motion' },
-  { tag:'Interactive',   title:'Kinetic', cat:'Interactive',    role:'Front-End Development / WebGL' },
-  { tag:'Motion',        title:'Halide',  cat:'Motion Study',   role:'3D Modeling / Motion Design' },
+  { tag:'3D / Motion',   title:'Prism',     cat:'Brand Film',     role:'3D Modeling / Motion Design' },
+  { tag:'Identity',      title:'Access',    cat:'Brand System',   role:'Art Direction / Print' },
+  { tag:'Packaging',     title:'Umai',      cat:'Product Design', role:'Illustration / Packaging' },
+  { tag:'Demo Site',     title:'Track',     cat:'Demo Site',      role:'Design / Front-End Development / 3D Modeling' },
+  { tag:'Web',           title:'Ledger',    cat:'Web Design',     role:'Front-End Development / UI' },
+  { tag:'Campaign',      title:'Aftertone', cat:'Campaign',       role:'Art Direction / Motion' },
+  { tag:'Interactive',   title:'Kinetic',   cat:'Interactive',    role:'Front-End Development / WebGL' },
+  { tag:'Motion',        title:'Halide',    cat:'Motion Study',   role:'3D Modeling / Motion Design' },
 ];
 
 const majorProjects = [
-  { tag:'Brand System', title:'Project One',   cat:'Brand System', role:'Art Direction / Identity' },
+  {
+    tag: 'Brand System',
+    title: 'Project One',
+    cat: 'Brand System',
+    role: 'Art Direction / Identity',
+    gallery: [
+      { img: 'LA.Overview-09.jpg', label: 'Crest Mark' },
+      { img: 'LA.Overview-10.jpg', label: 'Shield Emblem' },
+      { img: 'LA.Overview-11.png', label: 'Apparel Design' },
+      { img: 'LA.Overview-12.jpg', label: 'Futures Team' },
+      { img: 'LA.Overview-13.jpg', label: 'Desert Graphic' },
+      { img: 'LA.Overview-14.jpg', label: 'Mascot Badge' },
+      { img: 'LA.Overview-15.jpg', label: 'Tag & Seal' },
+      { img: 'LA.Overview-16.jpg', label: 'Championship Poster' },
+      { img: 'LA.Overview-17.jpg', label: 'Social Campaign' }
+    ]
+  },
   { tag:'Web',           title:'Project Two',   cat:'Web Design',   role:'Front-End Development / UI' },
   { tag:'Motion',        title:'Project Three', cat:'Motion',       role:'Motion Design / 3D Modeling' },
   { tag:'Campaign',      title:'Project Four',  cat:'Campaign',     role:'Art Direction / Strategy' },
@@ -768,10 +774,9 @@ function cardHTML(p, i, className){
       <div class="proj-card-meta"><div class="tag">${p.tag}</div><h3>${p.title}</h3></div>
     </button>`;
 }
-// duplicate the list for a seamless looping marquee
+
 const setHTML = projects.map((p,i)=>cardHTML(p,i,'proj-card')).join('');
 track.innerHTML = setHTML + setHTML;
-
 workGrid.innerHTML = majorProjects.map((p,i)=>cardHTML(p,i,'work-card')).join('');
 
 track.querySelectorAll('.proj-card').forEach(card=>{
@@ -796,7 +801,7 @@ window.addEventListener('resize', measure);
 setTimeout(measure, 200);
 
 function carouselFrame(){
-  pos += 0.35; // calm pace
+  pos += 0.35;
   if (singleWidth > 0 && pos >= singleWidth) pos -= singleWidth;
   track.style.transform = `translateX(${-pos}px)`;
   requestAnimationFrame(carouselFrame);
@@ -810,19 +815,31 @@ let galleryItems = [];
 let currentSeed = 0;
 const tallPattern = [0,3,4,7];
 
-function buildCardGallery(seed){
-  const count = 10;
-  galleryItems = Array.from({length:count}, (_,k)=>({
-    idx: seed + k,
-    isVideo: k % 3 === 1
-  }));
+function buildCardGallery(p, seed){
+  if (p && p.gallery && p.gallery.length > 0) {
+    galleryItems = p.gallery.map((item, k) => ({
+      idx: seed + k,
+      img: item.img,
+      label: item.label || `Asset ${String(k+1).padStart(2,'0')}`,
+      isVideo: false
+    }));
+  } else {
+    const count = 10;
+    galleryItems = Array.from({length:count}, (_,k)=>({
+      idx: seed + k,
+      isVideo: k % 3 === 1,
+      label: `${k % 3 === 1 ? 'Video' : 'Photo'} ${String(k+1).padStart(2,'0')}`
+    }));
+  }
+
   cardGallery.innerHTML = galleryItems.map((g,k)=>`
-    <button type="button" class="g-tile ${tallPattern.includes(k % 8) ? 'tall' : ''}" data-k="${k}" aria-label="Open ${g.isVideo ? 'video' : 'photo'} ${k+1}">
-      ${phVisual(g.idx)}
-      <div class="g-label">${g.isVideo ? 'Video' : 'Photo'} ${String(k+1).padStart(2,'0')}</div>
+    <button type="button" class="g-tile ${tallPattern.includes(k % 8) ? 'tall' : ''}" data-k="${k}" aria-label="Open ${g.label}">
+      ${g.img ? `<img src="${g.img}" alt="${g.label}" loading="lazy">` : phVisual(g.idx)}
+      <div class="g-label">${g.label}</div>
       ${g.isVideo ? `<div class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>` : ''}
     </button>
   `).join('');
+
   cardGallery.querySelectorAll('.g-tile').forEach(el=>{
     el.addEventListener('click', ()=> openLightbox(parseInt(el.dataset.k,10)));
   });
@@ -838,10 +855,10 @@ function openCard(p, displayIdx, gallerySeed){
   document.getElementById('cardRole').textContent = p.role;
   document.getElementById('cardLink').href = '#';
   document.getElementById('cardDesc').textContent =
-    `A placeholder case study for ${p.title} — swap this copy for a real project summary describing the brief, the approach, the constraints, and the outcome. Because this panel scrolls independently, longer write-ups stay readable without pushing the gallery around: process notes, the problem statement, key decisions, tools used, and reflections can all live here comfortably. ${p.title} explores ${p.cat.toLowerCase()} through the lens of ${p.role.toLowerCase()}, balancing craft with a clear point of view from first sketch to final delivery.`;
+    `A comprehensive brand identity and creative system for ${p.title} — showcasing marks, vector emblems, custom apparel, meet collateral, and social campaign graphics. ${p.title} explores ${p.cat.toLowerCase()} through the lens of ${p.role.toLowerCase()}, balancing bold retro typography with energetic collegiate sport aesthetics.`;
   document.getElementById('cardScroll').scrollTop = 0;
 
-  buildCardGallery(gallerySeed);
+  buildCardGallery(p, gallerySeed);
 
   cardModal.classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -862,9 +879,14 @@ let lbIndex = 0;
 
 function renderLightbox(){
   const g = galleryItems[lbIndex];
-  lightboxInner.innerHTML = phVisual(g.idx) +
-    `<div class="lb-caption">${g.isVideo ? 'Video' : 'Photo'} ${String(lbIndex+1).padStart(2,'0')} / ${String(galleryItems.length).padStart(2,'0')} — ${currentTitle}</div>`;
+  const visualContent = g.img 
+    ? `<img src="${g.img}" alt="${g.label}">` 
+    : phVisual(g.idx);
+
+  lightboxInner.innerHTML = visualContent +
+    `<div class="lb-caption">${g.label} (${String(lbIndex+1).padStart(2,'0')} / ${String(galleryItems.length).padStart(2,'0')}) — ${currentTitle}</div>`;
 }
+
 function openLightbox(k){
   lbIndex = k;
   renderLightbox();
